@@ -3,7 +3,8 @@
 #include <vector>
 #include <cassert>
 
-void testDefaultConstructor() {
+void testDefaultConstructor() 
+{
     Position<int, int> *p1 = new Position<int, int>(11);
     assert(p1->getKey() == 11);
     assert(p1->getValues().size() == 0);
@@ -17,9 +18,25 @@ void testDefaultConstructor() {
     cout << "Default constructor is tested" << endl;
 }
 
+void testCopyConstructor() 
+{
+    Position<int, int> pOrig(11);
+    pOrig.addValue(10086);
+    Position<int, int> pCopy(pOrig);
+
+    assert(pOrig == pCopy);
+    assert(&pOrig != &pCopy);
+
+    assert(pOrig.getValues() == pCopy.getValues());
+    assert(&pOrig.getValues() != &pCopy.getValues());
+
+    cout << "Copy constructor is tested" << endl;
+}
+
 
 
 
 int main() {
     testDefaultConstructor();
+    testCopyConstructor();
 }
