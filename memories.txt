@@ -1,0 +1,9 @@
+In BinaryTree.h, insert()
+    Por qué esta función devuelve un puntero de Position, si su acción is inserir un nodo al árbol.
+    Podría ser su acción depén de si el key ya existe?
+        - Si ya existe el key, push_back un valor al vector, y devolver el puntero del Position
+        - Si no existe el key, añade un nodo nuevo al árbol, y devolver el puntero del Position.
+
+
+
+check BinaryTree insert() and nodeOrParent

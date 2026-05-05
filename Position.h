@@ -133,14 +133,23 @@ bool Position<Key, Value>::isLeaf() const {
 
 template <class Key, class Value>
 int Position<Key, Value>::depth() const {
-	if (this->parent == nullptr) return 0;
+	if (this->isRoot()) return 0;
 
 	return (this->parent.depth() + 1);
 }
 
 template <class Key, class Value>
 int Position<Key, Value>::height() const {
-	return (this.depth() + 1);
+	int leftHeight, rightHeight = -1;
+
+	if (this->leftChild != nullptr) {
+		leftHeight = this->leftChild->height();
+	}
+	if (this->rightChild != nullptr) {
+		rightHeight = this->rightChild->height();
+	}
+
+	return max(leftHeight, rightHeight) + 1;
 }
 
 template <class Key, class Value>
