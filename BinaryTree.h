@@ -34,6 +34,7 @@ protected:
 private: 
     int _size; 
 	void addNode(Position<Key, Value>* parent, Position<Key, Value>* newNode);
+	Position<Key, Value>* cloneSubtree(const Position<Key, Value>* origNode, Position<Key, Value>* parent);
 	Position<Key, Value>* findNodeOrParent(const Key& key) const;
 	template <class Func> void preOrder(const Position<Key, Value> *node, Func& action) const;  // Immutable traverse, which DO NOT allows to modify the tree
 };
@@ -58,20 +59,36 @@ BinaryTree<Key, Value>::BinaryTree() {
  */
 template<class Key, class Value>
 BinaryTree<Key, Value>::BinaryTree(const BinaryTree<Key, Value>& orig) {
-	this->root = new Position<Key, Value>(orig->getRoot());
-	for (Value value : orig->getValues()) {
-		this->root->addValue(value);
-	}
+	this->root = cloneSubtree(orig.getRoot(), nullptr);
+	this->_size = orig.size();
 
-	Position<Key, Value>* 
-	auto addNode_ = (&parent)[Position<Key, Value>* newNode] -> void {
-
-
-	}
-	
-	this->preOrder(orig->getRoot()->getLeft(), )
+	assert(this->size() == orig.size());
 }
 
+/**
+ * @brief Deep copy the subtree with root origNode, and returns a pointer of the root of the new subtree.
+ *
+ *
+ * @param origNode Pointer of the root of the original tree
+ * @param parent   Pointer of the parent of the new Node
+ */
+ template<class Key, class Value>
+ Position<Key, Value>* BinaryTree<Key, Value>::cloneSubtree(const Position<Key, Value>* origNode, Position<Key, Value>* parent) 
+ {
+	if (origNode == nullptr) return nullptr;
+	
+	Position<Key, Value> newNode = new Position<Key, Value>(origNode->getKey());
+	newNode->setParent(parent);
+
+	newNode->setLeft(cloneSubtree(origNode->getLeft(), newNode));
+	newNode->setRight(cloneSubtree(origNode->getRight(), newNode));
+
+	return newNode;
+ }
+
+
+/**
+ */
 template<class Key, class Value>
 BinaryTree<Key, Value>::~BinaryTree() {
 
@@ -221,10 +238,7 @@ void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node = n
  */
 template<class Key, class Value>
 bool BinaryTree<Key, Value>::identicalTree(const BinaryTree<Key, Value>& other) const {
-	Position<Key, Value> *thisPos;
-	Position<Key, Value> *otherPos;
-
-
+	// using operator ==
 }
 
 
@@ -252,9 +266,9 @@ bool BinaryTree<Key, Value>::search(const Key& key) const {
  * @param newNode The node to be add
  * @throw invalid_argument if parent==nullptr
  */
-template<Key, Value>
+template<class Key, class Value>
 void BinaryTree<Key, Value>::addNode(Position<Key, Value>* parent, Position<Key, Value>* newNode) {
-	if (parent = nullptr) throw invald_argument("Not able to add new node: the parent node is nullptr!")
+	if (parent == nullptr) throw invalid_argument("Not able to add new node: the parent node is nullptr!");
 
 	if (newNode->getKey() < parent->getKey()) {
 		parent->setLeft(newNode);
@@ -263,7 +277,7 @@ void BinaryTree<Key, Value>::addNode(Position<Key, Value>* parent, Position<Key,
 	}
 	newNode->setParent(parent);
 
-	this->size++;
+	this->_size++;
 }
 
 
