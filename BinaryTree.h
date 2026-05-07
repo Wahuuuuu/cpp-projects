@@ -27,6 +27,7 @@ public:
 	void printPostOrder(const Position<Key, Value> *node = nullptr) const; 
 	bool identicalTree(const BinaryTree<Key, Value>& other) const;
 	Position<Key, Value>* search(const Key& key) const;
+	vector<Key> getLeaves() const;
 
 protected: 
 	Position<Key, Value>* root;
@@ -118,11 +119,15 @@ int BinaryTree<Key, Value>::size() const
 		count++;
 	};
 
-	this->preOrder(this->root, counter);
+	this->preOrder<void>(this->root, counter);
 
-	assert(count == this->size);
+	assert(count == this->_size);
 	return count;
 }
+
+
+template<class Key, class Value>
+int BinaryTree<Key, Value>::coutSizePreOrder()
 
 
 template<class Key, class Value>
@@ -147,7 +152,7 @@ Position<Key, Value>* BinaryTree<Key, Value>::insert(const Key& key, const Value
 		this->root = new Position<Key, Value>(key);
 		this->root->addValue(value);
 
-		this->size++;
+		this->_size++;
 		return this->root;
 	}
 
@@ -161,7 +166,7 @@ Position<Key, Value>* BinaryTree<Key, Value>::insert(const Key& key, const Value
 	else {                        // the key is not in the tree yet, add new node
 		Position<Key, Value> *newPos = new Position<Key, Value>(key);
 		this->addNode(foundPos, newPos);
-		newPos->addValues(value);
+		newPos->addValue(value);
 
 		return newPos;
 	}
@@ -207,7 +212,7 @@ const vector<Value>& BinaryTree<Key, Value>::getValues(const Key& key) const {
  * @param *node, the node to begin
  */
 template<class Key, class Value>
-void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node = nullptr) const {
+void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node) const {
 	auto printNode = [](Position<Key, Value>* node) -> void {
 		cout << " " + node->getKey();
 	};
@@ -225,7 +230,7 @@ void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node = nu
  * @param *node, the node to begin
  */
 template<class Key, class Value>
-void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node = nullptr) const {
+void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node) const {
 	if (node == nullptr) return;
 
 	printPreOrder(node->getLeft());
@@ -233,20 +238,15 @@ void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node = n
 	cout << " " + node->getKey();
 }
 
-/**
- * 
- */
-template<class Key, class Value>
-bool BinaryTree<Key, Value>::identicalTree(const BinaryTree<Key, Value>& other) const {
-	// using operator ==
-}
+
+
 
 
 /**
  * 
  */
 template<class Key, class Value>
-bool BinaryTree<Key, Value>::search(const Key& key) const {
+Position<Key, Value>* BinaryTree<Key, Value>::search(const Key& key) const {
 	if (this->isEmpty()) return nullptr;
 
 	Position<Key, Value>* foundPos = this->findNodeOrParent(key);

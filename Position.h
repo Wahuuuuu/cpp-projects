@@ -21,9 +21,9 @@ public:
 	/* Consultors */ 
 	const Key& getKey() const; 
 	const vector<Value>& getValues() const; 
-	const Position<Key, Value>* getParent() const;
-	const Position<Key, Value>* getLeft() const;
-	const Position<Key, Value>* getRight() const;
+	Position<Key, Value>* getParent() const;
+	Position<Key, Value>* getLeft() const;
+	Position<Key, Value>* getRight() const;
 	
 	/* Operacions */ 
 	bool isRoot() const;
@@ -75,7 +75,7 @@ Position<Key, Value>::~Position() {}
 
 template <class Key, class Value>
 void Position<Key, Value>::setParent(Position<Key, Value> *parent_) {
-	this->parentNode = parent_;
+	this->parent = parent_;
 }
 
 template <class Key, class Value>
@@ -103,17 +103,17 @@ const vector<Value>& Position<Key, Value>::getValues() const {
 }
 
 template <class Key, class Value>
-const Position<Key, Value>* Position<Key, Value>::getParent() const {
+Position<Key, Value>* Position<Key, Value>::getParent() const {
 	return this->parent;
 }
 
 template <class Key, class Value>
-const Position<Key, Value>* Position<Key, Value>::getLeft() const {
+Position<Key, Value>* Position<Key, Value>::getLeft() const {
 	return this->leftChild;
 }
 
 template <class Key, class Value>
-const Position<Key, Value>* Position<Key, Value>::getRight() const {
+Position<Key, Value>* Position<Key, Value>::getRight() const {
 	return this->rightChild;
 }
 
@@ -123,12 +123,12 @@ const Position<Key, Value>* Position<Key, Value>::getRight() const {
 
 template <class Key, class Value>
 bool Position<Key, Value>::isRoot() const {
-	return (this.parent == nullptr);
+	return (this->parent == nullptr);
 }
 
 template <class Key, class Value>
 bool Position<Key, Value>::isLeaf() const {
-	return (this.leftChild == nullptr || this.rightChild == nullptr);
+	return (this->leftChild == nullptr || this->rightChild == nullptr);
 }
 
 template <class Key, class Value>
