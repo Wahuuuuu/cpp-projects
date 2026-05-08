@@ -10,7 +10,7 @@ void testDefaultConstructor() {
     assert(bt->isEmpty());
     assert(bt->size() == 0);
     assert(bt->getRoot() == nullptr);
-    cout << "testDefaultConstructor ended" << endl;
+    cout << "1. testDefaultConstructor ended" << endl;
 }
 
 void testInsert() {
@@ -48,7 +48,7 @@ void testInsert() {
 
      // bt->printPreOrder(bt->getRoot()); cout << endl;
 
-    cout << "testInsert ended" << endl;
+    cout << "2. testInsert ended" << endl;
 }
 
 /*
@@ -68,7 +68,7 @@ void testCopyConstructor() {
     BinaryTree<int, string> orig(*initTree());
     BinaryTree<int, string> bt(orig);
 
-    assert(*orig.getRoot() == *bt.getRoot());
+    assert(*orig.getRoot() == *bt.getRoot());  // orig tree and cloned tree refers to different address
 
     assert(bt.getRoot()->getKey() == 10);
 
@@ -85,7 +85,7 @@ void testCopyConstructor() {
     assert(bt.size() == 7);
     assert(bt.height() == 4);
 
-    cout << "testCopyConstructor ended" << endl;
+    cout << "3. testCopyConstructor ended" << endl;
 }
 
 void testDestructorDoesNotCrash() {
@@ -93,7 +93,7 @@ void testDestructorDoesNotCrash() {
 
     delete bt;
 
-    cout << "testDestructorDoesNotCrash ended" << endl;
+    cout << "4. testDestructorDoesNotCrash ended" << endl;
 }
 
 void testContains() {
@@ -110,12 +110,32 @@ void testContains() {
     assert(!bt->contains(0));
     assert(!bt->contains(10086));
 
-    cout << "testContains ended" << endl;
+    cout << "5. testContains ended" << endl;
 }
 
 void testGetValues() {
+    BinaryTree<int, string>* bt(initTree());
+
+    vector<string> v1 = {"5"}; assert(bt->getValues(5) == v1);
+    vector<string> v2 = {"-5"}; assert(bt->getValues(-5) == v2);
+    vector<string> v3 = {"30"}; assert(bt->getValues(30) == v3);
+
+    /* assert throw */
+    bool emptyTree = false; bool notInTree = false;
+
+    try { bt->getValues(10086); }
+    catch (const out_of_range& e) { notInTree = true; }
+
+    BinaryTree<int, string>* emptybt;
+    try { emptybt->getValues(1); }
+    catch (const out_of_range& e) { emptyTree = true;}
+
+        cout << "Hi" << endl;
 
 
+    assert(emptyTree && notInTree);
+
+    cout << "6. testGetValues ended" << endl;
 }
 
 

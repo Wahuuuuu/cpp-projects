@@ -80,7 +80,7 @@ BinaryTree<Key, Value>::BinaryTree(const BinaryTree<Key, Value>& orig) {
  {
 	if (origNode == nullptr) return nullptr;
 	
-	Position<Key, Value> newNode = new Position<Key, Value>(origNode->getKey());
+	Position<Key, Value>* newNode = new Position<Key, Value>(origNode->getKey());
 	newNode->setParent(parent);
 
 	newNode->setLeft(cloneSubtree(origNode->getLeft(), newNode));
@@ -197,10 +197,10 @@ bool BinaryTree<Key, Value>::contains(const Key& key) const {
  */
 template<class Key, class Value>
 const vector<Value>& BinaryTree<Key, Value>::getValues(const Key& key) const {
-	if (this->isEmpty()) throw out_of_range("Not able to get value of the key " + key + ": the tree is empty!");
+	if (this->isEmpty()) throw out_of_range("Not able to get value of the key : the tree is empty!");
 
 	if (this->contains(key)) return (this->findNodeOrParent(key)->getValues());
-	else throw out_of_range("Not able to get value of the key " + key + ": the key is not in tree!");
+	else throw out_of_range("Not able to get value of the key: the key is not in tree!");
 }
 
 /**

@@ -3,7 +3,7 @@ Pending
 ===================================================================================================================================
 delete addNode
 
-solve problem in copyConstructor
+solve problem in testGetValue
 
 combine findNodeOrParent and search
 
