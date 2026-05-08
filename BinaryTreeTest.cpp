@@ -10,6 +10,8 @@ void testDefaultConstructor() {
     assert(bt->isEmpty());
     assert(bt->size() == 0);
     assert(bt->getRoot() == nullptr);
+
+    delete bt;
     cout << "1. testDefaultConstructor ended" << endl;
 }
 
@@ -110,6 +112,7 @@ void testContains() {
     assert(!bt->contains(0));
     assert(!bt->contains(10086));
 
+    delete bt;
     cout << "5. testContains ended" << endl;
 }
 
@@ -126,18 +129,72 @@ void testGetValues() {
     try { bt->getValues(10086); }
     catch (const out_of_range& e) { notInTree = true; }
 
-    BinaryTree<int, string>* emptybt;
+    BinaryTree<int, string>* emptybt = new BinaryTree<int, string>();
     try { emptybt->getValues(1); }
-    catch (const out_of_range& e) { emptyTree = true;}
-
-        cout << "Hi" << endl;
-
+    catch (const out_of_range& e) { emptyTree = true; }
 
     assert(emptyTree && notInTree);
 
+    delete bt;
     cout << "6. testGetValues ended" << endl;
 }
 
+void testPrintPreOrder() {
+    BinaryTree<int, string>* bt(initTree());
+    string expTreePreOrder = " 10 5 -5 15 12 20 30";
+    // bt->printPreOrder(bt->getRoot()); cout << endl;
+
+    string expSubTreePreOrder = " 15 12 20 30";
+    // bt->printPreOrder(bt->getRoot()->getRight()); cout << endl;
+
+    BinaryTree<int, string>* emptybt = new BinaryTree<int, string>();
+    string expEmptyTree = "";
+    emptybt->printPreOrder(emptybt->getRoot());
+
+    /* test not crash when parameter = nullptr */
+    bt->printPreOrder(nullptr);
+    bt->printPreOrder();
+
+    /* assert exception if node not in tree */
+    bool notInTree = false;
+    Position<int, string> p(10086);
+    try { bt->printPreOrder(&p); }
+    catch (const out_of_range& e) { notInTree = true; }
+    assert(notInTree);
+
+    delete bt; delete emptybt;
+    cout << "7. testPrintPreOrder ended" << endl;
+}
+
+void testPrintPostOrder() {
+    BinaryTree<int, string>* bt(initTree());
+    string expTreePostOrder = " -5 5 12 30 20 15 10";
+    // bt->printPostOrder(bt->getRoot()); cout << endl;
+
+    string expSubTreePostOrder = " 12 30 20 15";
+    // bt->printPostOrder(bt->getRoot()->getRight()); cout << endl;
+
+    BinaryTree<int, string>* emptybt = new BinaryTree<int, string>();
+    string expEmptyTree = "";
+    emptybt->printPostOrder(emptybt->getRoot());
+
+    /* test not crash when parameter = nullptr */
+    bt->printPostOrder(nullptr);
+    bt->printPostOrder();
+
+    /* assert exception if node not in tree */
+    bool notInTree = false;
+    Position<int, string> p(10086);
+    try { bt->printPostOrder(&p); }
+    catch (const out_of_range& e) { notInTree = true; }
+    assert(notInTree);
+
+    cout << "8. testPrintPostOrder ended" << endl;
+}
+
+void testIdenticalTree() {
+    
+}
 
 int main() {
     testDefaultConstructor();
@@ -146,4 +203,6 @@ int main() {
     testDestructorDoesNotCrash();
     testContains();
     testGetValues();
+    testPrintPreOrder();
+    testPrintPostOrder();
 }

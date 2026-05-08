@@ -75,9 +75,9 @@ BinaryTree<Key, Value>::BinaryTree(const BinaryTree<Key, Value>& orig) {
  * @param origNode Pointer of the root of the original tree
  * @param parent   Pointer of the parent of the new Node
  */
- template<class Key, class Value>
- Position<Key, Value>* BinaryTree<Key, Value>::cloneSubtree(const Position<Key, Value>* origNode, Position<Key, Value>* parent) 
- {
+template<class Key, class Value>
+Position<Key, Value>* BinaryTree<Key, Value>::cloneSubtree(const Position<Key, Value>* origNode, Position<Key, Value>* parent) 
+{
 	if (origNode == nullptr) return nullptr;
 	
 	Position<Key, Value>* newNode = new Position<Key, Value>(origNode->getKey());
@@ -87,7 +87,7 @@ BinaryTree<Key, Value>::BinaryTree(const BinaryTree<Key, Value>& orig) {
 	newNode->setRight(cloneSubtree(origNode->getRight(), newNode));
 
 	return newNode;
- }
+}
 
 
 /**
@@ -197,7 +197,7 @@ bool BinaryTree<Key, Value>::contains(const Key& key) const {
  */
 template<class Key, class Value>
 const vector<Value>& BinaryTree<Key, Value>::getValues(const Key& key) const {
-	if (this->isEmpty()) throw out_of_range("Not able to get value of the key : the tree is empty!");
+	if (this->isEmpty()) throw out_of_range("Not able to get value of the key: the tree is empty!");
 
 	if (this->contains(key)) return (this->findNodeOrParent(key)->getValues());
 	else throw out_of_range("Not able to get value of the key: the key is not in tree!");
@@ -215,6 +215,7 @@ const vector<Value>& BinaryTree<Key, Value>::getValues(const Key& key) const {
 template<class Key, class Value>
 void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node) const {
 	if (node == nullptr) return;
+	if (!this->contains(node->getKey())) throw out_of_range("Not able to print in Preorder: the node in not in tree");
 
 	cout << " " << node->getKey();
 
@@ -234,9 +235,11 @@ void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node) con
 template<class Key, class Value>
 void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node) const {
 	if (node == nullptr) return;
+	if (!this->contains(node->getKey())) throw out_of_range("Not able to print in Postorder: the node in not in tree");
 
 	this->printPostOrder(node->getLeft());
 	this->printPostOrder(node->getRight());
+
 	cout << " " << node->getKey();
 }
 

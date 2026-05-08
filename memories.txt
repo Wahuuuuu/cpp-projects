@@ -3,7 +3,10 @@ Pending
 ===================================================================================================================================
 delete addNode
 
-solve problem in testGetValue
+test:
+    - identicalTree
+    - search
+    - getLeaves
 
 combine findNodeOrParent and search
 
