@@ -34,10 +34,12 @@ protected:
 	
 private: 
     int _size; 
+	void getLeaves_(vector<Key>& leaves, const Position<Key, Value>* node) const;
+	bool identicalTree_(const Position<Key, Value>* nodeOrig, const Position<Key, Value>* nodeThis) const;
+	int countSizePreOrder(const Position<Key, Value>* node) const;
 	void addNode(Position<Key, Value>* parent, Position<Key, Value>* newNode);
 	Position<Key, Value>* cloneSubtree(const Position<Key, Value>* origNode, Position<Key, Value>* parent);
 	Position<Key, Value>* findNodeOrParent(const Key& key) const;
-	template <class Func> void preOrder(const Position<Key, Value> *node, Func& action) const;  // Immutable traverse, which DO NOT allows to modify the tree
 };
 
 
@@ -92,8 +94,9 @@ BinaryTree<Key, Value>::BinaryTree(const BinaryTree<Key, Value>& orig) {
  */
 template<class Key, class Value>
 BinaryTree<Key, Value>::~BinaryTree() {
-
+	delete this->root;
 }
+
 
 
 // Functions
@@ -101,7 +104,7 @@ BinaryTree<Key, Value>::~BinaryTree() {
 
 template<class Key, class Value>
 bool BinaryTree<Key, Value>::isEmpty() const {
-	return (this->size() == 0);
+	return (this->_size == 0);
 }
 
 
@@ -114,25 +117,23 @@ Position<Key, Value>* BinaryTree<Key, Value>::getRoot() const {
 template<class Key, class Value>
 int BinaryTree<Key, Value>::size() const 
 {
-	int count = 0;
-	auto counter = [&count](const Position<Key, Value> /*position*/) -> void {
-		count++;
-	};
-
-	this->preOrder<void>(this->root, counter);
+	int count = countSizePreOrder(this->root);
 
 	assert(count == this->_size);
 	return count;
 }
 
-
 template<class Key, class Value>
-int BinaryTree<Key, Value>::coutSizePreOrder()
+int BinaryTree<Key, Value>::countSizePreOrder(const Position<Key, Value>* node) const {
+	if (node == nullptr) return 0;
+
+	return (1 + this->countSizePreOrder(node->getLeft()) + this->countSizePreOrder(node->getRight()));
+}
 
 
 template<class Key, class Value>
 int BinaryTree<Key, Value>::height() const {
-	return this->root->height();
+	return (this->root->height() + 1);
 }
 
 
@@ -206,25 +207,26 @@ const vector<Value>& BinaryTree<Key, Value>::getValues(const Key& key) const {
  * @brief Print the keys of the tree with root=node in preorder, separated with spaces
  *
  * If the tree is empty, prints nothing.
- * If there are no parameter, *node = nullptr.
+ * If there are no parameter, *node = nullptr, prints nothing.
  * Format: " k1 k2 k3 k4"
  *
  * @param *node, the node to begin
  */
 template<class Key, class Value>
 void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node) const {
-	auto printNode = [](Position<Key, Value>* node) -> void {
-		cout << " " + node->getKey();
-	};
-	
-	this->preOrder(this->root, printNode);
+	if (node == nullptr) return;
+
+	cout << " " << node->getKey();
+
+	this->printPreOrder(node->getLeft());
+	this->printPreOrder(node->getRight());
 }
 
 /**
  * @brief Print the keys of the tree with root=node in postorder, separated with spaces
  *
  * If the tree is empty, prints nothing.
- * If there are no parameter, *node = nullptr.
+ * If there are no parameter, *node = nullptr, prints nothing.
  * Format: " k1 k2 k3 k4"
  *
  * @param *node, the node to begin
@@ -233,13 +235,31 @@ template<class Key, class Value>
 void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node) const {
 	if (node == nullptr) return;
 
-	printPreOrder(node->getLeft());
-	printPreOrder(node->getRight());
-	cout << " " + node->getKey();
+	this->printPostOrder(node->getLeft());
+	this->printPostOrder(node->getRight());
+	cout << " " << node->getKey();
 }
 
 
+template <class Key, class Value>
+bool BinaryTree<Key, Value>::identicalTree(const BinaryTree<Key, Value>& other) const {
+	return (this->identicalTree_(other.getRoot(), this->root));
+}
 
+
+template<class Key, class Value>
+bool BinaryTree<Key, Value>::identicalTree_(const Position<Key, Value>* nodeOrig, const Position<Key, Value>* nodeThis) const {
+	if ((nodeOrig == nullptr) && (nodeThis == nullptr)) return true;
+
+	if (nodeOrig == nodeThis) {
+		bool sameLeft = identicalTree_(nodeOrig->getLeft(), nodeThis->getLeft());
+		bool sameRight = identicalTree_(nodeOrig->getRight(), nodeThis->getRight());
+		return (sameLeft && sameRight);
+	}
+
+	// if (nodeOrig != nodeThis)
+	return false;
+}
 
 
 /**
@@ -253,6 +273,25 @@ Position<Key, Value>* BinaryTree<Key, Value>::search(const Key& key) const {
 	if (foundPos->getKey() == key) return foundPos;
 	else return nullptr;
 }
+
+
+template<class Key, class Value>
+vector<Key> BinaryTree<Key, Value>::getLeaves() const {
+	vector<Key> leaves = {};
+	getLeaves_(leaves, this->root);
+	return leaves;
+}
+
+// traverse PreOrder
+template<class Key, class Value>
+void BinaryTree<Key, Value>::getLeaves_(vector<Key>& leaves, const Position<Key, Value>* node) const {
+	if (node == nullptr) return;
+	if (node->isLeaf()) leaves.push_back(node->getKey());
+
+	getLeaves_(leaves, node->getLeft());
+	getLeaves_(leaves, node->getRight());
+}
+
 
 /**
  * @brief this function adds a new node to this tree
@@ -278,23 +317,6 @@ void BinaryTree<Key, Value>::addNode(Position<Key, Value>* parent, Position<Key,
 	newNode->setParent(parent);
 
 	this->_size++;
-}
-
-
-// Immutable traverse, which DO NOT allows to modify the tree
-template<class Key, class Value>
-template<class Func>
-void BinaryTree<Key, Value>::preOrder(const Position<Key, Value> *node, Func &action) const {
-	if (node == nullptr) return;
-
-	// do action to the current node
-	action(node);
-
-	// visit left subtree and do actions
-	preOrder(node->getLeft(), action);
-
-	// visit right subtree and do actions
-	preOrder(node->getRight(), action);
 }
 
 

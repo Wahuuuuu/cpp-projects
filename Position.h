@@ -67,7 +67,10 @@ Position<Key, Value>::Position(const Position<Key, Value>& orig) {
 
 
 template <class Key, class Value>
-Position<Key, Value>::~Position() {}
+Position<Key, Value>::~Position() {
+	if (this->leftChild != nullptr) delete this->leftChild;
+	if (this->rightChild != nullptr) delete this->rightChild;
+}
 
 
 // Modificadors
@@ -140,7 +143,7 @@ int Position<Key, Value>::depth() const {
 
 template <class Key, class Value>
 int Position<Key, Value>::height() const {
-	int leftHeight, rightHeight = -1;
+	int leftHeight = -1; int rightHeight = -1;
 
 	if (this->leftChild != nullptr) {
 		leftHeight = this->leftChild->height();
