@@ -34,10 +34,11 @@ protected:
 	
 private: 
     int _size; 
+	void printPreOrder_(const Position<Key, Value> *node) const;
+	void printPostOrder_(const Position<Key, Value> *node) const;
 	void getLeaves_(vector<Key>& leaves, const Position<Key, Value>* node) const;
 	bool identicalTree_(const Position<Key, Value>* nodeOrig, const Position<Key, Value>* nodeThis) const;
 	int countSizePreOrder(const Position<Key, Value>* node) const;
-	void addNode(Position<Key, Value>* parent, Position<Key, Value>* newNode);
 	Position<Key, Value>* cloneSubtree(const Position<Key, Value>* origNode, Position<Key, Value>* parent);
 	Position<Key, Value>* findNodeOrParent(const Key& key) const;
 };
@@ -83,7 +84,7 @@ Position<Key, Value>* BinaryTree<Key, Value>::cloneSubtree(const Position<Key, V
 	for (Value value : origNode->getValues()) {
 		newNode->addValue(value);
 	}
-	
+
 	newNode->setParent(parent);
 
 	newNode->setLeft(cloneSubtree(origNode->getLeft(), newNode));
@@ -188,7 +189,16 @@ Position<Key, Value>* BinaryTree<Key, Value>::insert(const Key& key, const Value
 	}
 	else {                        // the key is not in the tree yet, add new node
 		Position<Key, Value> *newPos = new Position<Key, Value>(key);
-		this->addNode(foundPos, newPos);
+
+		if (newPos->getKey() < foundPos->getKey()) {
+			foundPos->setLeft(newPos);
+		} else {
+			foundPos->setRight(newPos);
+		}
+		newPos->setParent(foundPos);
+
+		this->_size++;
+
 		newPos->addValue(value);
 
 		return newPos;
@@ -225,6 +235,23 @@ const vector<Value>& BinaryTree<Key, Value>::getValues(const Key& key) const {
 	else throw out_of_range("Not able to get value of the key: the key is not in tree!");
 }
 
+
+/**
+ * @brief If an argument is given, prints the keys of the tree with root=node in postorder, separated with spaces. Otherwise, prints the whole tree;
+ *
+ * @param *node, the node to begin
+ */
+template<class Key, class Value>
+void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node) const {
+	if (this->isEmpty()) return;
+	else {
+		if (node == nullptr) printPreOrder_(this->root);
+		else printPreOrder_(node);
+		cout << endl;
+	}
+}
+
+
 /**
  * @brief Print the keys of the tree with root=node in preorder, separated with spaces
  *
@@ -235,15 +262,36 @@ const vector<Value>& BinaryTree<Key, Value>::getValues(const Key& key) const {
  * @param *node, the node to begin
  */
 template<class Key, class Value>
-void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node) const {
+void BinaryTree<Key, Value>::printPreOrder_(const Position<Key, Value> *node) const {
 	if (node == nullptr) return;
-	if (!this->contains(node->getKey())) throw out_of_range("Not able to print in Preorder: the node in not in tree");
+	if (!this->contains(node->getKey())) throw out_of_range("Not able to print in Preorder: the node is not in tree");
 
-	cout << " " << node->getKey();
+	cout << node->getKey() << " ";
 
-	this->printPreOrder(node->getLeft());
-	this->printPreOrder(node->getRight());
+	this->printPreOrder_(node->getLeft());
+	this->printPreOrder_(node->getRight());
 }
+
+/**
+ * @brief If an argument is given, prints the keys of the tree with root=node in postorder, separated with spaces. Otherwise, prints the whole tree;
+ *
+ * If the tree is empty, prints nothing.
+ * If there are no parameter, *node = nullptr, prints nothing.
+ * Format: " k1 k2 k3 k4"
+ *
+ * @param *node, the node to begin
+ */
+template<class Key, class Value>
+void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node) const {
+	if (this->isEmpty()) return;
+	else {
+		if (node == nullptr) printPostOrder_(this->root);
+		else printPostOrder_(node);
+		cout << endl;
+	}
+
+}
+
 
 /**
  * @brief Print the keys of the tree with root=node in postorder, separated with spaces
@@ -255,14 +303,14 @@ void BinaryTree<Key, Value>::printPreOrder(const Position<Key, Value> *node) con
  * @param *node, the node to begin
  */
 template<class Key, class Value>
-void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node) const {
+void BinaryTree<Key, Value>::printPostOrder_(const Position<Key, Value> *node) const {
 	if (node == nullptr) return;
 	if (!this->contains(node->getKey())) throw out_of_range("Not able to print in Postorder: the node in not in tree");
 
-	this->printPostOrder(node->getLeft());
-	this->printPostOrder(node->getRight());
+	this->printPostOrder_(node->getLeft());
+	this->printPostOrder_(node->getRight());
 
-	cout << " " << node->getKey();
+	cout << node->getKey() << " ";
 }
 
 
@@ -318,33 +366,6 @@ void BinaryTree<Key, Value>::getLeaves_(vector<Key>& leaves, const Position<Key,
 
 	getLeaves_(leaves, node->getLeft());
 	getLeaves_(leaves, node->getRight());
-}
-
-
-/**
- * @brief this function adds a new node to this tree
- *
- * This function do 3 actions:
- *     - setLeft/setRight of parent
- *     - setParent of newNode
- *     - increases the size of this tree
- *
- * @param parent The parent node
- * @param newNode The node to be add
- * @throw invalid_argument if parent==nullptr
- */
-template<class Key, class Value>
-void BinaryTree<Key, Value>::addNode(Position<Key, Value>* parent, Position<Key, Value>* newNode) {
-	if (parent == nullptr) throw invalid_argument("Not able to add new node: the parent node is nullptr!");
-
-	if (newNode->getKey() < parent->getKey()) {
-		parent->setLeft(newNode);
-	} else {
-		parent->setRight(newNode);
-	}
-	newNode->setParent(parent);
-
-	this->_size++;
 }
 
 
