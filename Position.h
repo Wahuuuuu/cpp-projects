@@ -131,7 +131,7 @@ bool Position<Key, Value>::isRoot() const {
 
 template <class Key, class Value>
 bool Position<Key, Value>::isLeaf() const {
-	return (this->leftChild == nullptr || this->rightChild == nullptr);
+	return (this->leftChild == nullptr && this->rightChild == nullptr);
 }
 
 template <class Key, class Value>

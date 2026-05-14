@@ -71,7 +71,6 @@ BinaryTree<Key, Value>::BinaryTree(const BinaryTree<Key, Value>& orig) {
 /**
  * @brief Deep copy the subtree with root origNode, and returns a pointer of the root of the new subtree.
  *
- *
  * @param origNode Pointer of the root of the original tree
  * @param parent   Pointer of the parent of the new Node
  */
@@ -81,6 +80,10 @@ Position<Key, Value>* BinaryTree<Key, Value>::cloneSubtree(const Position<Key, V
 	if (origNode == nullptr) return nullptr;
 	
 	Position<Key, Value>* newNode = new Position<Key, Value>(origNode->getKey());
+	for (Value value : origNode->getValues()) {
+		newNode->addValue(value);
+	}
+	
 	newNode->setParent(parent);
 
 	newNode->setLeft(cloneSubtree(origNode->getLeft(), newNode));
@@ -91,6 +94,7 @@ Position<Key, Value>* BinaryTree<Key, Value>::cloneSubtree(const Position<Key, V
 
 
 /**
+ * @brief Destroy all the elements of the binary tree.
  */
 template<class Key, class Value>
 BinaryTree<Key, Value>::~BinaryTree() {
@@ -102,18 +106,29 @@ BinaryTree<Key, Value>::~BinaryTree() {
 // Functions
 // -------------
 
+/**
+ * @brief Returns true if this tree is empty, false otherwise.
+ * 
+ * @return True if this tree is empty, false otherwise.
+ */
 template<class Key, class Value>
 bool BinaryTree<Key, Value>::isEmpty() const {
 	return (this->_size == 0);
 }
 
 
+/**
+ * @brief Returns a pointer of the root.
+ */
 template<class Key, class Value>
 Position<Key, Value>* BinaryTree<Key, Value>::getRoot() const {
 	return this->root;
 }
 
 
+/**
+ * @brief Returns the size of this tree.
+ */
 template<class Key, class Value>
 int BinaryTree<Key, Value>::size() const 
 {
@@ -123,6 +138,10 @@ int BinaryTree<Key, Value>::size() const
 	return count;
 }
 
+/**
+ * @brief Returns the size of this tree.
+ * 
+ */
 template<class Key, class Value>
 int BinaryTree<Key, Value>::countSizePreOrder(const Position<Key, Value>* node) const {
 	if (node == nullptr) return 0;
@@ -131,6 +150,9 @@ int BinaryTree<Key, Value>::countSizePreOrder(const Position<Key, Value>* node) 
 }
 
 
+/**
+ * @brief Returns the height of this tree.
+ */
 template<class Key, class Value>
 int BinaryTree<Key, Value>::height() const {
 	return (this->root->height() + 1);
@@ -138,7 +160,7 @@ int BinaryTree<Key, Value>::height() const {
 
 
 /**
- * @brief Inserts a key-value pair into the tree.
+ * @brief Inserts a key-value pair into the tree. If the key exists, add value to the node.
  *
  * If the key already exists, the value is added to the existing position.
  * Otherwise, a new position is created.
@@ -244,29 +266,30 @@ void BinaryTree<Key, Value>::printPostOrder(const Position<Key, Value> *node) co
 }
 
 
+/**
+ * @brief Returns true if all nodes of both trees are equal(==), fals otherwise.
+ */
 template <class Key, class Value>
 bool BinaryTree<Key, Value>::identicalTree(const BinaryTree<Key, Value>& other) const {
 	return (this->identicalTree_(other.getRoot(), this->root));
 }
 
-
+/**
+ * @brief Returns true if all nodes of both trees are equal(==), fals otherwise.
+ */
 template<class Key, class Value>
 bool BinaryTree<Key, Value>::identicalTree_(const Position<Key, Value>* nodeOrig, const Position<Key, Value>* nodeThis) const {
 	if ((nodeOrig == nullptr) && (nodeThis == nullptr)) return true;
 
-	if (nodeOrig == nodeThis) {
-		bool sameLeft = identicalTree_(nodeOrig->getLeft(), nodeThis->getLeft());
-		bool sameRight = identicalTree_(nodeOrig->getRight(), nodeThis->getRight());
-		return (sameLeft && sameRight);
-	}
+	if ((nodeOrig == nullptr) || (nodeThis == nullptr)) return false;
 
-	// if (nodeOrig != nodeThis)
-	return false;
+	bool sameLeft = identicalTree_(nodeOrig->getLeft(), nodeThis->getLeft());
+	bool sameRight = identicalTree_(nodeOrig->getRight(), nodeThis->getRight());
+	return (sameLeft && sameRight);
 }
 
-
 /**
- * 
+ * @brief Returns a pointer to the node with the key given. Returns nullptr if the node with the key given doesn't exists.
  */
 template<class Key, class Value>
 Position<Key, Value>* BinaryTree<Key, Value>::search(const Key& key) const {
@@ -277,7 +300,9 @@ Position<Key, Value>* BinaryTree<Key, Value>::search(const Key& key) const {
 	else return nullptr;
 }
 
-
+/**
+ * @brief Returns a vector which contains the key of all leaves.
+ */
 template<class Key, class Value>
 vector<Key> BinaryTree<Key, Value>::getLeaves() const {
 	vector<Key> leaves = {};

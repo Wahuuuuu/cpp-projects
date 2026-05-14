@@ -71,8 +71,10 @@ void testCopyConstructor() {
     BinaryTree<int, string> bt(orig);
 
     assert(*orig.getRoot() == *bt.getRoot());  // orig tree and cloned tree refers to different address
+    assert(orig.getRoot()->getValues()[0] == "10");
 
     assert(bt.getRoot()->getKey() == 10);
+    assert(bt.getRoot()->getValues().size() == 1);
 
     assert(bt.getRoot()->getLeft()->getKey() == 5);
     assert(bt.getRoot()->getLeft()->getLeft()->getKey() == -5);
@@ -189,11 +191,68 @@ void testPrintPostOrder() {
     catch (const out_of_range& e) { notInTree = true; }
     assert(notInTree);
 
+    delete emptybt;
     cout << "8. testPrintPostOrder ended" << endl;
 }
 
 void testIdenticalTree() {
-    
+    // basic case
+    BinaryTree<int, string>* bt = new BinaryTree<int, string>(*initTree());
+    BinaryTree<int, string>* btCopy = new BinaryTree<int, string>(*initTree());
+    assert(bt->identicalTree(*btCopy));
+
+    bt->insert(8, "8");
+    assert(!bt->identicalTree(*btCopy));
+
+    // same tree
+    assert(bt->identicalTree(*bt));
+
+    // empty trees
+    BinaryTree<int, string> emptyBt1;
+    BinaryTree<int, string> emptyBt2;
+    assert(emptyBt1.identicalTree(emptyBt2));
+
+    delete bt;
+    delete btCopy;
+    cout << "9. testIdenticalTree ended" << endl;
+}
+
+void testSearch() {
+    BinaryTree<int, string> bt(*initTree());
+
+    assert(bt.search(10)->getValues()[0] == "10");
+    assert(bt.search(5)->getValues()[0] == "5");
+    assert(bt.search(-5)->getValues()[0] == "-5");
+    assert(bt.search(15)->getValues()[0] == "15");
+    assert(bt.search(12)->getValues()[0] == "12");
+    assert(bt.search(20)->getValues()[0] == "20");
+    assert(bt.search(30)->getValues()[0] == "30");
+
+    assert(bt.search(10086) == nullptr);
+
+    BinaryTree<int, string> emptyBt;
+    assert(emptyBt.search(10086) == nullptr);
+
+    cout << "10. testSearch ended" << endl;
+}
+
+void testGetLeaves() {
+    vector<int> result;
+
+    BinaryTree<int, string> bt(*initTree());
+    vector<int> leavesBt = {-5, 12, 30};
+    result = bt.getLeaves();
+    assert(leavesBt == bt.getLeaves());
+
+    BinaryTree<int, string> emptyBt;
+    vector<int> leavesEmptyBt = {};
+    assert(leavesEmptyBt == emptyBt.getLeaves());
+
+    BinaryTree<int, string> rootBt; rootBt.insert(10, "10");
+    vector<int> leavesRootBt = {10};
+    assert(leavesRootBt == rootBt.getLeaves());
+
+    cout << "11. testGetLeaves ended" << endl;
 }
 
 int main() {
@@ -205,4 +264,7 @@ int main() {
     testGetValues();
     testPrintPreOrder();
     testPrintPostOrder();
+    testIdenticalTree();
+    testSearch();
+    testGetLeaves();
 }
