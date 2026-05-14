@@ -1,9 +1,12 @@
 ===================================================================================================================================
 Pending
 ===================================================================================================================================
-combine findNodeOrParent and search
+In BinaryTree: 
+    combine findNodeOrParent and search
+    optimize the amount of the auxiliar functions
 
-optimize the amount of the auxiliar functions
+In WordIndexer:
+    Finish the implementation
 
 ===================================================================================================================================
 Questions
