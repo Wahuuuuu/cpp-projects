@@ -5,6 +5,9 @@
 #include "Position.h"
 #include "Tuple.h"
 #include <iostream>
+#include <chrono>
+#include <stdexcept>
+#include <vector>
 
 using namespace std;
 
@@ -19,15 +22,17 @@ public:
     int height() const; 
     bool contains(const string &word) const; 
     void printOccurrences(const string &word) const; 
-    void printDictionary(Position<string, Tuple<int> > *node = nullptr) const;
+    void printDictionary(Position<string, Tuple<int>> *node = nullptr) const;
 
 protected:
     BinaryTree<string, Tuple<int> > *tree; 
     void addText(string path);
 
 private:
+    bool askWhetherContinue() const;
     void insertWord(const string &word, const int &line, const int &position); 
-    /* Metodes auxiliars, definiu-los aquí sota */
+    void printNode(const Position<string, Tuple<int>>* node) const;
+    
 };
 
 
@@ -42,7 +47,8 @@ WordIndexer::WordIndexer() {
 }
 
 /**
- * @brief Reads the file and creates a WordIndexer with a tree based on the content of the file.
+ * @brief Creates a WordIndexer with a tree based on the content of the file. 
+ * And prints the execution time of the creation.
  */
 WordIndexer::WordIndexer(string path) {
     this->addText(path);
@@ -90,12 +96,63 @@ bool WordIndexer::contains(const string &word) const {
 /**
  * @brief Prints all occurrences of the word
  */
-void WordIndexer::printOccurrences(const string &word) const; 
+void WordIndexer::printOccurrences(const string &word) const {
+    Position<string, Tuple<int>>* node = this->tree->search(word);
+
+    if (node == nullptr) throw new out_of_range("No s'ha pogut print occurrences: la palaura \"" + word + "\" no està en l'arbre");
+    
+    printNode(node);
+}
 
 /**
- * @brief Prints all occurrences of all word in alphabetical order
+ * @brief Prints all occurrences of all word in alphabetical order. For each 40 words, asks whether to continue.
  */
-void WordIndexer::printDictionary(Position<string, Tuple<int> > *node = nullptr) const;
+void WordIndexer::printDictionary(Position<string, Tuple<int> > *node = nullptr) const {
+    if(this->tree->isEmpty()) return;
+
+    vector< Position<string, Tuple<int>>* > pending;
+    pending.push_back(this->tree->getRoot());
+
+
+    while(!pending.empty()) {
+        for (int i = 0; i < 40 && !pending.empty(); i++) {
+            Position<string, Tuple<int>>* current = pending.back();
+            pending.pop_back();
+
+            printNode(current); cout << endl;
+
+            if (current->getRight() != nullptr) {
+                pending.push_back(current->getRight());
+            }
+
+            if (current->getLeft() != nullptr) {
+                pending.push_back(current->getLeft());
+            }
+        }
+
+        if (!pending.empty()) {
+            bool cont = askWhetherContinue();
+            if (!cont) return;
+        }
+    }
+}
+
+/**
+ * @brief Asks user whether to continue.
+ */
+bool WordIndexer::askWhetherContinue() const {
+    cout << "Voleu seguir mostrant l'arbre (s/n)?" << endl;
+    
+    string option = ""; cin >> option;
+    while ((option != "s") && (option != "n")) {
+        cout << "Opció invalida, torneu a introduir una opció (s/n): " << endl;
+        cin >> option;
+    }
+
+    if (option == "s") return true;
+    return false;
+}
+
 
 /**
  * @brief Reads the file and save it's words into the tree.
@@ -115,5 +172,24 @@ void WordIndexer::addText(string path);
  */
 void WordIndexer::insertWord(const string &word, const int &line, const int &position); 
 
+/**
+ * @brief Prints the node. If node == nullptr, prints nothing.
+ * 
+ * Format:
+ * key [(value[0].line, value[0].word), ...,  (value[n].line, value[n].word)]
+ */
+void WordIndexer::printNode(const Position<string, Tuple<int>>* node) const {
+    if (node == nullptr) return;
+
+    vector<Tuple<int>> occurences = node->getValues();
+    cout << node->getKey() << " [";
+
+    // Prints (value[0].line, value[0].word)
+    for (vector<Tuple<int>>::iterator it = occurences.begin(); it != occurences.end(); ++it) {
+        cout << "(" << it->getLine() << ", " << it->getWord() << ")";
+    }
+
+    cout << "]";
+}
 
 #endif  // WORDINDEXER_H
