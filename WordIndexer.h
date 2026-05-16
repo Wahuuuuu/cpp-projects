@@ -138,16 +138,18 @@ void WordIndexer::printDictionary_(Position<string, Tuple<int> > *node) const {
     pending.push_back(node);
 
 
+    
+    bool cont = true;
     while(!pending.empty()) {
         for (int i = 0; i < 40 && !pending.empty(); i++) {
             Position<string, Tuple<int>>* current = pending.back();
-            pending.pop_back();
 
-            if (current->getRight() != nullptr) {
+            while (current->getRight() != nullptr) {
                 pending.push_back(current->getRight());
             }
 
             printNode(current); cout << endl;
+            pending.pop_back();
 
             if (current->getLeft() != nullptr) {
                 pending.push_back(current->getLeft());
