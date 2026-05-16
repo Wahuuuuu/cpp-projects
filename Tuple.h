@@ -29,7 +29,7 @@ private:
 template <class T>
 Tuple<T>::Tuple(const T& line, const T& word) {
     this->line = line;
-    this->word = word
+    this->word = word;
 }
 
 template <class T>

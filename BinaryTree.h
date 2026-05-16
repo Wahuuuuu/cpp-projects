@@ -156,6 +156,7 @@ int BinaryTree<Key, Value>::countSizePreOrder(const Position<Key, Value>* node) 
  */
 template<class Key, class Value>
 int BinaryTree<Key, Value>::height() const {
+	if(this->isEmpty()) return 0;
 	return (this->root->height() + 1);
 }
 
@@ -225,7 +226,7 @@ bool BinaryTree<Key, Value>::contains(const Key& key) const {
  *
  * @param key The key to be searched.
  * @return vector of values
- * @throw out_of_range If the node is not in this tree
+ * @throw out_of_range If the node is not in this tree or if the tree is empty
  */
 template<class Key, class Value>
 const vector<Value>& BinaryTree<Key, Value>::getValues(const Key& key) const {
@@ -378,7 +379,7 @@ void BinaryTree<Key, Value>::getLeaves_(vector<Key>& leaves, const Position<Key,
  *       (if a new node key will added to the tree, that non-empty node will be it's parent node)
  * 
  * @param key The key to search
- * @return a pointer to the node with key, or tha last non-empty node
+ * @return a pointer to the node with key, or the last non-empty node
  * @throw out_of_range If this tree is empty
  */
 template<class Key, class Value>

@@ -255,6 +255,16 @@ void testGetLeaves() {
     cout << "11. testGetLeaves ended" << endl;
 }
 
+void testHeight() {
+    BinaryTree<int, string> bt(*initTree());
+    cout << bt.height() << endl;
+
+    BinaryTree<int, string> emptyBt;
+    cout << emptyBt.height() << endl;
+
+    cout << "12. testHeight" << endl;
+}
+
 int main() {
     testDefaultConstructor();
     testInsert();
@@ -267,4 +277,5 @@ int main() {
     testIdenticalTree();
     testSearch();
     testGetLeaves();
+    testHeight();
 }
