@@ -27,6 +27,8 @@ public:
     void printOccurrences(const string &word) const; 
     void printDictionary(Position<string, Tuple<int>> *node = nullptr) const;
 
+    void printTree() const;
+
 protected:
     BinaryTree<string, Tuple<int> > *tree; 
     void addText(string path);
@@ -35,10 +37,9 @@ private:
     void insertWord(const string &word, const int &line, const int &position); 
 
     void printDictionary_(Position<string, Tuple<int> > *node) const;
-    void addLineText(const string& lineText, const int& lineCount) const;
-    bool askWhetherContinue() const;
-    void printNode(const Position<string, Tuple<int>>* node) const;
-    
+    void addLineText(const string& lineText, const int& lineCount);
+    bool askWhetherKeepGoing() const;
+    void printNode(const Position<string, Tuple<int>>* node, const bool printOccur) const;
 };
 
 
@@ -107,20 +108,20 @@ bool WordIndexer::contains(const string &word) const {
  */
 void WordIndexer::printOccurrences(const string &word) const {
     Position<string, Tuple<int>>* node = this->tree->search(word);
-
     if (node == nullptr) throw out_of_range("No s'ha pogut print occurrences: la palaura \"" + word + "\" no està en l'arbre");
     
-    printNode(node);
+    printNode(node, true);
 }
 
 
 void WordIndexer::printDictionary(Position<string, Tuple<int> > *node) const {
     if (this->tree->isEmpty()) return;
+
     if (node == nullptr) {
         printDictionary_(this->tree->getRoot()); 
         return;
     }
-    if (this->contains(node->getKey())) {
+    else if (this->contains(node->getKey())) {
         printDictionary_(node); 
         return;
     }
@@ -129,49 +130,77 @@ void WordIndexer::printDictionary(Position<string, Tuple<int> > *node) const {
 
 
 /**
- * @brief Prints all occurrences of all word in alphabetical order. For each 40 words, asks whether to continue.
+ * @brief 
  */
 void WordIndexer::printDictionary_(Position<string, Tuple<int> > *node) const {
-    if(this->tree->isEmpty()) return;
+    if (node == nullptr) return;
+
+    printDictionary_(node->getLeft());
+
+    printNode(node, true); cout << endl;
+
+    printDictionary_(node->getRight());
+}
+
+
+/**
+ * @brief Prints all keys of the tree in alphabetical order. For each 40 keys, asks whether to continue.
+ */
+void WordIndexer::printTree() const {
+    if (this->tree->isEmpty()) return;
 
     vector< Position<string, Tuple<int>>* > pending;
-    pending.push_back(node);
+    // pending.push_back(this->tree->getRoot());
+    int counter = 0;
 
+    Position<string, Tuple<int>>* smallest = this->tree->getRoot();
+    while (!pending.empty() || (smallest != nullptr)) {
+        if (counter >= 40) {
+            bool keepGoing = askWhetherKeepGoing();
+            if (!keepGoing) break;
 
-    
-    bool cont = true;
-    while(!pending.empty()) {
-        for (int i = 0; i < 40 && !pending.empty(); i++) {
-            Position<string, Tuple<int>>* current = pending.back();
+            counter = 0;
+        }
 
-            while (current->getRight() != nullptr) {
-                pending.push_back(current->getRight());
-            }
+        /*
+         * Idea: print the smallest and search the second smallest
+         *
+         * if smallest don't has rightchild --------- the second smallest = parent of the smallest = pending.back()
+         * if smallest has rightchild: 
+         *      if it's rightchild has leftchild ---- the second smallest is in it's leftchilds
+         *      if not ------------------------------ the secons smallest is the rightchild itself.
+         */
 
-            printNode(current); cout << endl;
-            pending.pop_back();
-
-            if (current->getLeft() != nullptr) {
-                pending.push_back(current->getLeft());
+        if (smallest != nullptr ) {
+            pending.push_back(smallest);
+            // cout << "w";
+            while (smallest->getLeft() != nullptr) {
+                // cout << "w1";
+                pending.push_back(smallest->getLeft());
+                smallest = smallest->getLeft();
             }
         }
 
-        if (!pending.empty()) {
-            bool cont = askWhetherContinue();
-            if (!cont) return;
-        }
+        smallest = pending.back();
+        printNode(smallest, false); cout << endl;
+        pending.pop_back();
+        counter++;
+
+        smallest = smallest->getRight();  // Do smallest has rightchild?
     }
+
 }
+
 
 /**
  * @brief Asks user whether to continue.
  */
-bool WordIndexer::askWhetherContinue() const {
+bool WordIndexer::askWhetherKeepGoing() const {
     cout << "Voleu seguir mostrant l'arbre (s/n)?" << endl;
     
     string option = ""; cin >> option;
     while ((option != "s") && (option != "n")) {
-        cout << "Opció invalida, torneu a introduir una opció (s/n): " << endl;
+        cout << "Opció invàlida, torneu a introduir una opció (s/n): " << endl;
         cin >> option;
     }
 
@@ -209,7 +238,7 @@ void WordIndexer::addText(string path)
 /**
  * @brief Add each word of a line into the tree.
  */
-void WordIndexer::addLineText(const string& lineText, const int& lineCount) const {
+void WordIndexer::addLineText(const string& lineText, const int& lineCount) {
     string word = "";
     int wordCount = 0;
     for (string::const_iterator it = lineText.begin(); it != lineText.end(); it++) {
@@ -229,6 +258,13 @@ void WordIndexer::addLineText(const string& lineText, const int& lineCount) cons
             }
             // if empty and not alnum: not a word, do nothing
         }
+
+        if (!word.empty()) {
+        wordCount++;
+
+        Tuple<int> occurence(lineCount, wordCount);
+        tree->insert(word, occurence);
+    }
     }
 }
 
@@ -243,6 +279,7 @@ void WordIndexer::insertWord(const string &word, const int &line, const int &pos
     this->tree->insert(word, occurence);
 }
 
+
 /**
  * @brief Prints the node. If node == nullptr, prints nothing.
  * 
@@ -251,18 +288,25 @@ void WordIndexer::insertWord(const string &word, const int &line, const int &pos
  * 
  * @throw out_of_range If the node is not in tree or if the tree is empty
  */
-void WordIndexer::printNode(const Position<string, Tuple<int>>* node) const {
+void WordIndexer::printNode(const Position<string, Tuple<int>>* node, const bool printOccur) const {
     if (node == nullptr) return;
 
-    vector<Tuple<int>> occurences = node->getValues();
-    cout << node->getKey() << " [";
+    // print key
+    cout << node->getKey();
+    
+    if (printOccur) {
+        vector<Tuple<int>> occurences = node->getValues();
+        cout << " [";
 
-    // Prints (value[0].line, value[0].word)
-    for (vector<Tuple<int>>::iterator it = occurences.begin(); it != occurences.end(); ++it) {
-        cout << "(" << it->getLine() << ", " << it->getWord() << ")";
+        // Prints (value[0].line, value[0].word)
+        for (vector<Tuple<int>>::iterator it = occurences.begin(); it != occurences.end(); ++it) {
+            cout << "(" << it->getLine() << ", " << it->getWord() << ")";
+        }
+
+        cout << "]";
     }
+    // else, print nothing more
 
-    cout << "]";
 }
 
 #endif  // WORDINDEXER_H

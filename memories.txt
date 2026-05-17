@@ -34,3 +34,43 @@ In BinaryTree.h, insert()
 
 In BinaryTree.h, print()
     It only has to print the key, right?
+
+
+
+=============================================================================================
+    if(this->tree->isEmpty()) return;
+
+    vector< Position<string, Tuple<int>>* > pending;
+    pending.push_back(node);
+
+
+    int count = 1;
+    bool continuePrint = true;
+    while(!pending.empty() && continuePrint) {
+        if (count == 40) {
+            continuePrint = askWhetherContinue();
+            count = 0;
+        }
+
+    }
+
+
+/*             for (int i = 0; i < 40 && !pending.empty(); i++) {
+            Position<string, Tuple<int>>* current = pending.back();
+
+            while (current->getRight() != nullptr) {
+                pending.push_back(current->getRight());
+            }
+
+            printNode(current); cout << endl;
+            pending.pop_back();
+
+            if (current->getLeft() != nullptr) {
+                pending.push_back(current->getLeft());
+            }
+        }
+
+        if (!pending.empty()) {
+            bool continuePrint = askWhetherContinue();
+            if (!continuePrint) return;
+        } */

@@ -78,10 +78,22 @@ void testPrintOccurrences() {
 
 void testPrintDictionary() {
     WordIndexer wi("testFile.txt");
+    // wi.printDictionary();
 
-    cout << wi.size() << endl;
-    wi.printDictionary();
+    WordIndexer emptywi;
+    emptywi.printDictionary();
 
+    cout << "5. testPrintDictionary" << endl;
+}
+
+void testPrintTree() {
+    WordIndexer wi("shortText.txt");
+    wi.printTree();
+
+    WordIndexer emptywi;
+    emptywi.printTree();
+
+    cout << "6. testPrintTree" << endl;
 }
 
 
@@ -92,4 +104,5 @@ int main() {
     testContains();
     testPrintOccurrences();
     testPrintDictionary();
+    testPrintTree();
 }
