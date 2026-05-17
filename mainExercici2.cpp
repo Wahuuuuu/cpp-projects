@@ -106,7 +106,7 @@ void createNewWithFile(WordIndexer*& wi) {
         wi = newWi;
         delete oldWi;
 
-        cout << "Temps transcorregut: " << chrono::duration_cast<chrono::seconds>(end - begin).count() << " s." << endl;
+        cout << "Temps transcorregut: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " s." << endl;
 
     } catch (const runtime_error& e) {
         cerr << "No s'ha pogut crear nou word indexer: " << e.what() << endl;
@@ -126,7 +126,7 @@ void searchAllWordsInDictionary(WordIndexer* wi) {
     }
     chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-    cout << "Temps transcorregut: " << chrono::duration_cast<chrono::seconds>(end - begin).count() << " s." << endl;
+    cout << "Temps transcorregut: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " s." << endl;
     dict.close();
 }
 
@@ -136,5 +136,5 @@ void printDictionaryCountTime(WordIndexer* wi) {
     wi->printDictionary();
     chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-    cout << "Temps transcorregut: " << chrono::duration_cast<chrono::seconds>(end - begin).count() << " s." << endl;
+    cout << "Temps transcorregut: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " s." << endl;
 }

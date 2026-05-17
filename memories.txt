@@ -7,16 +7,9 @@ In BinaryTree:
     combine findNodeOrParent and search
     optimize the amount of the auxiliar functions
 
-In WordIndexer:
-    Finish the implementation
-    showDict to inorder
-    add strip in contains()
-
 In mainEx2:
-    What's the difference btween case2 and case4?
     Is depth = height-1 ?
 
-    printDistionary traverses well, but in preorder.
 
 
 ===================================================================================================================================

@@ -12,14 +12,49 @@ using namespace std;
 template<class Key, class Value>
 class BinaryTree {
 public: 
+	/**
+	 * @brief Creates an empty tree.
+	 */
 	BinaryTree(); 
+	/**
+	 * @brief Creates a copy of the orig tree.
+	 *
+	 * @param orig 
+	 */
 	BinaryTree(const BinaryTree<Key, Value>& orig); 
+	/**
+	 * @brief Destroy all the elements of the binary tree.
+	 */
 	virtual ~BinaryTree(); 
 
+	/**
+	 * @brief Returns true if this tree is empty, false otherwise.
+	 * 
+	 * @return True if this tree is empty, false otherwise.
+	 */
 	bool isEmpty() const; 
+	/**
+	 * @brief Returns a pointer of the root.
+	 */
 	Position<Key, Value>* getRoot() const; 
+	/**
+	 * @brief Returns the size of this tree.
+	 */
 	int size() const; 
+	/**
+	 * @brief Returns the height of this tree.
+	 */
 	int height() const; 
+	/**
+	 * @brief Inserts a key-value pair into the tree. If the key exists, add value to the node.
+	 *
+	 * If the key already exists, the value is added to the existing position.
+	 * Otherwise, a new position is created.
+	 *
+	 * @param key The key to insert.
+	 * @param value The value associated with the key.
+	 * @return A pointer to the position where the value was inserted.
+	 */
 	virtual Position<Key, Value>* insert(const Key& key, const Value& value); 
 	bool contains(const Key& key) const; 
 	const vector<Value>& getValues(const Key& key) const; 
@@ -33,13 +68,24 @@ protected:
 	Position<Key, Value>* root;
 	
 private: 
-    int _size; 
+	int _size; 
+	/**
+	 * @brief Deep copy the subtree with root origNode, and returns a pointer of the root of the new subtree.
+	 *
+	 * @param origNode Pointer of the root of the original tree
+	 * @param parent   Pointer of the parent of the new Node
+	 */
+	Position<Key, Value>* cloneSubtree(const Position<Key, Value>* origNode, Position<Key, Value>* parent);
+	/**
+	 * @brief Returns the size of this tree.
+	 * 
+	 * @return size of the tree.
+	 */
+	int countSizePreOrder(const Position<Key, Value>* node) const;
 	void printPreOrder_(const Position<Key, Value> *node) const;
 	void printPostOrder_(const Position<Key, Value> *node) const;
 	void getLeaves_(vector<Key>& leaves, const Position<Key, Value>* node) const;
 	bool identicalTree_(const Position<Key, Value>* nodeOrig, const Position<Key, Value>* nodeThis) const;
-	int countSizePreOrder(const Position<Key, Value>* node) const;
-	Position<Key, Value>* cloneSubtree(const Position<Key, Value>* origNode, Position<Key, Value>* parent);
 	Position<Key, Value>* findNodeOrParent(const Key& key) const;
 };
 
@@ -142,6 +188,7 @@ int BinaryTree<Key, Value>::size() const
 /**
  * @brief Returns the size of this tree.
  * 
+ * @return size of the tree.
  */
 template<class Key, class Value>
 int BinaryTree<Key, Value>::countSizePreOrder(const Position<Key, Value>* node) const {
